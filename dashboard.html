@@ -1,4 +1,4 @@
-
+=
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +9,12 @@
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:linear-gradient(135deg,#070b18,#101b35,#07111f);
   color:white;
   font-family:Arial,sans-serif;
 }
-
 header{
   background:#101a30;
   border-bottom:1px solid #263b60;
@@ -26,22 +24,14 @@ header{
   align-items:center;
   gap:15px;
 }
-
 .logo{
   color:#38bdf8;
   font-size:23px;
   font-weight:900;
   letter-spacing:1px;
 }
-
 .logo span{color:#fbbf24}
-
-main{
-  max-width:950px;
-  margin:25px auto;
-  padding:15px;
-}
-
+main{max-width:950px;margin:25px auto;padding:15px}
 .card{
   background:#121d35;
   border:1px solid #263b60;
@@ -50,22 +40,13 @@ main{
   margin-bottom:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.18);
 }
-
-h2{
-  color:#38bdf8;
-  margin-top:0;
-  font-size:20px;
-}
-
+h2{color:#38bdf8;margin-top:0;font-size:20px}
 p{color:#cbd5e1;line-height:1.6}
-
 .welcome{
   background:linear-gradient(120deg,#102a43,#172b4d);
   border-color:#2563a5;
 }
-
 .welcome h2{color:#fbbf24}
-
 input,select{
   width:100%;
   padding:14px;
@@ -77,16 +58,13 @@ input,select{
   font-size:15px;
   outline:none;
 }
-
 input:focus,select:focus{border-color:#38bdf8}
-
 label{
   display:block;
   color:#cbd5e1;
   font-weight:bold;
   font-size:14px;
 }
-
 button{
   background:linear-gradient(90deg,#0ea5e9,#38bdf8);
   color:#07111f;
@@ -97,26 +75,14 @@ button{
   cursor:pointer;
   transition:.2s;
 }
-
 button:hover{transform:translateY(-2px)}
-
-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-  transform:none;
-}
-
-.logout{
-  background:#dc3545;
-  color:white;
-}
-
+button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.logout{background:#dc3545;color:white}
 .product-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
   gap:13px;
 }
-
 .product{
   background:#0b1428;
   border:2px solid #344765;
@@ -126,32 +92,20 @@ button:disabled{
   text-align:center;
   transition:.2s;
 }
-
-.product:hover{
-  border-color:#38bdf8;
-  transform:translateY(-2px);
-}
-
+.product:hover{border-color:#38bdf8;transform:translateY(-2px)}
 .product.selected{
   border-color:#38bdf8;
   background:#102a43;
   box-shadow:0 0 15px rgba(56,189,248,.15);
 }
-
 .product strong{
   display:block;
   color:#38bdf8;
   font-size:19px;
   margin-bottom:9px;
 }
-
 .product span{color:white;font-weight:bold}
-
-.small{
-  font-size:13px;
-  color:#94a3b8;
-}
-
+.small{font-size:13px;color:#94a3b8}
 .notice{
   background:#102a43;
   border:1px solid #245078;
@@ -159,15 +113,8 @@ button:disabled{
   border-radius:10px;
   margin:12px 0 18px;
 }
-
 .notice p{margin:7px 0}
-
-#selectedPrice{
-  color:#fbbf24;
-  font-weight:bold;
-  margin-top:15px;
-}
-
+#selectedPrice{color:#fbbf24;font-weight:bold;margin-top:15px}
 #message{
   padding:13px;
   border-radius:9px;
@@ -175,7 +122,6 @@ button:disabled{
   margin-top:15px;
   overflow-wrap:anywhere;
 }
-
 .order{
   background:#0b1428;
   border:1px solid #263b60;
@@ -183,37 +129,56 @@ button:disabled{
   padding:17px;
   margin:14px 0;
 }
-
 .order p{margin:9px 0}
+.status{color:#fbbf24;font-weight:bold}
+.order-time{font-size:13px;color:#94a3b8}
+.receipt-btn{margin-top:10px;background:#fbbf24;color:#111827}
+.section-number{color:#fbbf24;margin-right:5px}
+footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
 
-.status{
+/* PROFILE PHOTO */
+.profile-area{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+.avatar{
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  border:3px solid #38bdf8;
+  background:#0b1428;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+}
+.avatar-initial{
   color:#fbbf24;
-  font-weight:bold;
+  font-size:35px;
+  font-weight:900;
 }
-
-.order-time{
-  font-size:13px;
-  color:#94a3b8;
+.profile-info{flex:1;min-width:180px}
+.profile-info p{margin:5px 0 12px}
+#avatarInput{display:none}
+.photo-btn{margin-top:5px}
+#photoMessage{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  border-radius:9px;
+  overflow-wrap:anywhere;
+  font-size:14px;
 }
-
-.receipt-btn{
-  margin-top:10px;
-  background:#fbbf24;
-  color:#111827;
-}
-
-.section-number{
-  color:#fbbf24;
-  margin-right:5px;
-}
-
-footer{
-  text-align:center;
-  padding:25px;
-  color:#64748b;
-  font-size:13px;
-}
-
 @media(max-width:500px){
   header{padding:15px}
   .logo{font-size:19px}
@@ -234,7 +199,31 @@ footer{
 
   <div class="card welcome">
     <h2>Welcome to Peter Top Up! 💎</h2>
-    <p>Email: <strong id="customerEmail">Loading...</strong></p>
+
+    <div class="profile-area">
+      <div class="avatar">
+        <span class="avatar-initial" id="avatarInitial">P</span>
+        <img id="avatarImage" alt="Profile photo">
+      </div>
+
+      <div class="profile-info">
+        <p><strong id="customerEmail">Loading...</strong></p>
+        <p class="small">Your Peter Top Up profile</p>
+
+        <input
+          type="file"
+          id="avatarInput"
+          accept="image/jpeg,image/png,image/webp"
+        >
+
+        <button type="button" class="photo-btn" id="uploadPhotoBtn">
+          📷 Upload Profile Photo
+        </button>
+
+        <div id="photoMessage" role="status"></div>
+      </div>
+    </div>
+
     <p>Choose your Free Fire Diamonds package and submit your order.</p>
   </div>
 
@@ -247,14 +236,9 @@ footer{
 
   <div class="card">
     <h2><span class="section-number">02.</span> Player Information</h2>
-
     <label for="playerId">Free Fire Player ID</label>
-    <input
-      id="playerId"
-      type="text"
-      placeholder="Enter your Player ID"
-      autocomplete="off"
-    >
+    <input id="playerId" type="text"
+      placeholder="Enter your Player ID" autocomplete="off">
   </div>
 
   <div class="card">
@@ -276,12 +260,8 @@ footer{
     </div>
 
     <label for="transactionNumber">Payment Transaction Number</label>
-    <input
-      id="transactionNumber"
-      type="text"
-      placeholder="Enter transaction number"
-      autocomplete="off"
-    >
+    <input id="transactionNumber" type="text"
+      placeholder="Enter transaction number" autocomplete="off">
 
     <button id="submitOrder">Submit Order</button>
     <div id="message" role="status"></div>
@@ -317,6 +297,13 @@ function showMessage(message, success=false){
   box.style.background = success ? "#14532d" : "#7f1d1d";
 }
 
+function showPhotoMessage(message, success=false){
+  const box = document.getElementById("photoMessage");
+  box.textContent = message;
+  box.style.display = "block";
+  box.style.background = success ? "#14532d" : "#7f1d1d";
+}
+
 function formatDate(date){
   return date ? new Date(date).toLocaleString() : "Not recorded";
 }
@@ -329,6 +316,101 @@ function escapeHtml(value){
     '"':"&quot;",
     "'":"&#39;"
   })[char]);
+}
+
+/* PROFILE PHOTO FUNCTIONS */
+
+function displayAvatar(url){
+  const img = document.getElementById("avatarImage");
+  const initial = document.getElementById("avatarInitial");
+
+  img.onload = () => {
+    img.style.display = "block";
+    initial.style.display = "none";
+  };
+
+  img.onerror = () => {
+    img.style.display = "none";
+    initial.style.display = "block";
+  };
+
+  img.src = url;
+}
+
+async function loadAvatar(){
+  if(!currentUser) return;
+
+  const initial =
+    (currentUser.email || "P").trim().charAt(0).toUpperCase();
+
+  document.getElementById("avatarInitial").textContent = initial;
+
+  const path = currentUser.id + "/avatar";
+
+  const {data} = client.storage
+    .from("avatars")
+    .getPublicUrl(path);
+
+  displayAvatar(data.publicUrl + "?t=" + Date.now());
+}
+
+async function uploadAvatar(){
+  if(!currentUser){
+    showPhotoMessage("Please log in again.");
+    return;
+  }
+
+  const input = document.getElementById("avatarInput");
+  const file = input.files[0];
+
+  if(!file) return;
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+    showPhotoMessage("Please choose a JPG, PNG or WebP image.");
+    input.value = "";
+    return;
+  }
+
+  if(file.size > 5 * 1024 * 1024){
+    showPhotoMessage("Image is too large. Maximum size is 5 MB.");
+    input.value = "";
+    return;
+  }
+
+  const button = document.getElementById("uploadPhotoBtn");
+  button.disabled = true;
+  button.textContent = "Uploading...";
+
+  try{
+    const path = currentUser.id + "/avatar";
+
+    const {error} = await client.storage
+      .from("avatars")
+      .upload(path, file, {
+        cacheControl:"3600",
+        contentType:file.type,
+        upsert:true
+      });
+
+    if(error) throw error;
+
+    await loadAvatar();
+
+    showPhotoMessage("Profile photo updated successfully!", true);
+
+  }catch(error){
+    showPhotoMessage("Upload failed: " + error.message);
+  }finally{
+    button.disabled = false;
+    button.textContent = "📷 Change Profile Photo";
+    input.value = "";
+  }
 }
 
 async function loadDashboard(){
@@ -344,6 +426,7 @@ async function loadDashboard(){
   document.getElementById("customerEmail").textContent =
     currentUser.email || "";
 
+  await loadAvatar();
   await loadProducts();
   await loadHistory();
 }
@@ -457,7 +540,6 @@ async function submitOrder(){
     document.getElementById("transactionNumber").value = "";
 
     selectedProduct = null;
-
     document.getElementById("selectedPrice").textContent = "";
 
     document.querySelectorAll(".product").forEach(el =>
@@ -623,6 +705,14 @@ async function loadHistory(){
     container.appendChild(item);
   });
 }
+
+document.getElementById("uploadPhotoBtn")
+  .addEventListener("click", () => {
+    document.getElementById("avatarInput").click();
+  });
+
+document.getElementById("avatarInput")
+  .addEventListener("change", uploadAvatar);
 
 document.getElementById("submitOrder")
   .addEventListener("click", submitOrder);
