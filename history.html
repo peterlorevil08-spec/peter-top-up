@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders - Peter Top Up</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#0b1020;color:white;font-family:Arial,sans-serif}
+header{text-align:center;background:#151e35;padding:20px;border-radius:12px}
+h1,h2{color:#38bdf8}
+main{max-width:850px;margin:25px auto}
+.order{background:#151e35;padding:18px;margin:15px 0;border-radius:12px;text-align:left}
+p{color:#cbd5e1;overflow-wrap:anywhere}
+.status{font-weight:bold}
+.pending{color:#fbbf24}
+.verified,.delivered{color:#4ade80}
+.failed{color:#f87171}
+button{background:#38bdf8;border:0;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
+a{color:#38bdf8}
+#message{text-align:center;color:#fbbf24}
+</style>
+</head>
+<body>
+<header>
+<h1>PETER TOP UP</h1>
+<p>My Transaction History</p>
+</header>
+<main>
+<h2>My Orders</h2>
+<p id="message">Loading your orders...</p>
+<div id="orders"></div>
+<p><a href="index.html">Back to Home</a></p>
+</main>
+
+<script>
+const URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
+const KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
+const db = window.supabase.createClient(URL, KEY);
+
+async function loadOrders(){
+  const message = document.getElementById("message");
+  const container = document.getElementById("orders");
+
+  const {data: sessionData} = await db.auth.getSession();
+  if(!sessionData.session){
+    message.textContent = "Please login to view your orders.";
+    return;
+  }
+
+  const {data:userData,error:userError} = await db.auth.getUser();
+  if(userError || !userData.user){
+    message.textContent = "Could not verify your account. Please login again.";
+    return;
+  }
+
+  const {data,error} = await db
+    .from("orders")
+    .select("id, product_id, player_id, payment_method, amount_htg, payment_status, delivery_status, transaction_number, created_at")
+    .eq("user_id", userData.user.id)
+    .order("created_at", {ascending:false});
+
+  if(error){
+    message.textContent = "Could not load orders: " + error.message;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if(!data || data.length === 0){
+    message.textContent = "You have no orders yet.";
+    return;
+  }
+
+  message.textContent = "";
+
+  data.forEach(order=>{
+    const card = document.createElement("div");
+    card.className = "order";
+
+    const payment = order.payment_status || "Pending";
+    const delivery = order.delivery_status || "Pending";
+
+    card.innerHTML = `
+      <h3>Order #${order.id}</h3>
+      <p><b>Transaction:</b> ${order.transaction_number || "N/A"}</p>
+      <p><b>Product ID:</b> ${order.product_id || "N/A"}</p>
+      <p><b>Player ID:</b> ${order.player_id || "N/A"}</p>
+      <p><b>Amount:</b> ${order.amount_htg ?? "N/A"} HTG</p>
+      <p><b>Payment method:</b> ${order.payment_method || "N/A"}</p>
+      <p><b>Payment status:</b> <span class="status ${payment.toLowerCase()}">${payment}</span></p>
+      <p><b>Delivery status:</b> <span class="status ${delivery.toLowerCase()}">${delivery}</span></p>
+      <p><b>Date:</b> ${new Date(order.created_at).toLocaleString()}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+loadOrders();
+</script>
+</body>
+</html>
