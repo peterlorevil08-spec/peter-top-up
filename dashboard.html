@@ -1,22 +1,33 @@
-
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peter Top Up - Dashboard</title>
+<title>Peter Top Up</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b1020;color:white;font-family:Arial,sans-serif}
-header{background:#151e35;padding:22px;display:flex;justify-content:space-between;align-items:center}
-h1{color:#38bdf8;margin:0;font-size:22px}
-main{max-width:850px;margin:35px auto;padding:20px}
-.card{background:#151e35;padding:24px;border-radius:14px;margin-bottom:20px}
-h2{color:#38bdf8}
+header{background:#151e35;padding:20px;display:flex;justify-content:space-between;align-items:center}
+h1{color:#38bdf8;font-size:21px;margin:0}
+main{max-width:850px;margin:25px auto;padding:15px}
+.card{background:#151e35;padding:22px;border-radius:14px;margin-bottom:18px}
+h2{color:#38bdf8;margin-top:0}
 p{color:#cbd5e1}
-button{background:#38bdf8;color:#07111f;border:0;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
+input,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #334155;border-radius:8px;background:#0b1020;color:white}
+button{background:#38bdf8;color:#07111f;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
 .logout{background:#ef4444;color:white}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.product{background:#0b1020;border:2px solid #334155;padding:16px;border-radius:12px;cursor:pointer;text-align:center}
+.product.selected{border-color:#38bdf8;background:#102a43}
+.product strong{display:block;color:#38bdf8;font-size:18px;margin-bottom:8px}
+.product span{color:white}
+.small{font-size:13px;color:#94a3b8}
+.notice{background:#102a43;padding:14px;border-radius:9px;margin:12px 0}
+.order{border-bottom:1px solid #334155;padding:12px 0}
+.status{color:#fbbf24;font-weight:bold}
+#message{padding:12px;border-radius:8px;display:none;margin-top:12px}
 </style>
 </head>
 <body>
@@ -27,27 +38,49 @@ button{background:#38bdf8;color:#07111f;border:0;padding:12px 18px;border-radius
 
 <main>
 <div class="card">
-<h2>Welcome, <span id="customerName">Customer</span>!</h2>
-<p>Your personal account dashboard.</p>
+<h2>Welcome!</h2>
 <p>Email: <span id="customerEmail">Loading...</span></p>
+<p>Choose your Free Fire Diamonds package.</p>
 </div>
 
 <div class="card">
-<h2>Available Services</h2>
-<p>Mobile Top Up</p>
-<p>Digital Services</p>
-<p>Game Top Up</p>
-<p>More services coming soon.</p>
+<h2>1. Select Diamonds 💎</h2>
+<div class="product-grid" id="products">
+Loading products...
+</div>
+<p id="selectedPrice"></p>
 </div>
 
 <div class="card">
-<h2>Payment Proof</h2>
-<p>Payment submission will be available soon.</p>
+<h2>2. Player Information</h2>
+<label>Free Fire Player ID</label>
+<input id="playerId" type="text" placeholder="Enter your Player ID">
 </div>
 
 <div class="card">
-<h2>Transaction History</h2>
-<p>Your transactions will appear here.</p>
+<h2>3. Payment Method</h2>
+<select id="paymentMethod">
+<option value="">Choose payment method</option>
+<option value="MonCash">MonCash</option>
+<option value="NatCash">NatCash</option>
+</select>
+
+<div class="notice">
+<p><strong>MonCash:</strong> 31356200</p>
+<p><strong>NatCash:</strong> 35542784</p>
+<p class="small">Send the exact payment amount to the number you selected.</p>
+</div>
+
+<label>Payment transaction number</label>
+<input id="transactionNumber" type="text" placeholder="Enter transaction number">
+
+<button id="submitOrder">Submit Order</button>
+<div id="message"></div>
+</div>
+
+<div class="card">
+<h2>4. Transaction History</h2>
+<div id="history">Loading orders...</div>
 </div>
 </main>
 
@@ -56,34 +89,211 @@ const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
 
 const client = window.supabase.createClient(
-SUPABASE_URL, SUPABASE_KEY
+  SUPABASE_URL, SUPABASE_KEY
 );
 
+let currentUser = null;
+let selectedProduct = null;
+
+function showMessage(message, success=false){
+  const box = document.getElementById("message");
+  box.textContent = message;
+  box.style.display = "block";
+  box.style.background = success ? "#14532d" : "#7f1d1d";
+}
+
 async function loadDashboard(){
-const {data:{user},error} = await client.auth.getUser();
+  const {data, error} = await client.auth.getUser();
 
-if(error || !user){
-window.location.href="login.html";
-return;
+  if(error || !data.user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUser = data.user;
+  document.getElementById("customerEmail").textContent =
+    currentUser.email || "";
+
+  await loadProducts();
+  await loadHistory();
 }
 
-document.getElementById("customerEmail").textContent=user.email;
+async function loadProducts(){
+  const container = document.getElementById("products");
 
-const {data:profile} = await client
-.from("profiles")
-.select("full_name")
-.eq("id",user.id)
-.maybeSingle();
+  const {data, error} = await client
+    .from("products")
+    .select("id, diamonds, price_htg")
+    .eq("active", true)
+    .order("diamonds", {ascending:true});
 
-if(profile && profile.full_name){
-document.getElementById("customerName").textContent=profile.full_name;
+  if(error){
+    container.textContent = "Unable to load products.";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    container.textContent = "No active products available.";
+    return;
+  }
+
+  container.replaceChildren();
+
+  data.forEach(product => {
+    const item = document.createElement("div");
+    item.className = "product";
+
+    const title = document.createElement("strong");
+    title.textContent = Number(product.diamonds).toLocaleString() + " 💎";
+
+    const price = document.createElement("span");
+    price.textContent = Number(product.price_htg).toLocaleString() + " HTG";
+
+    item.append(title, price);
+
+    item.addEventListener("click", () => {
+      selectedProduct = product;
+
+      document.querySelectorAll(".product").forEach(el =>
+        el.classList.remove("selected")
+      );
+
+      item.classList.add("selected");
+
+      document.getElementById("selectedPrice").textContent =
+        "Selected: " + product.diamonds + " Diamonds - " +
+        product.price_htg + " HTG";
+    });
+
+    container.appendChild(item);
+  });
 }
+
+async function submitOrder(){
+  if(!currentUser){
+    showMessage("Please log in again.");
+    return;
+  }
+
+  if(!selectedProduct){
+    showMessage("Please select a Diamonds package.");
+    return;
+  }
+
+  const playerId = document.getElementById("playerId").value.trim();
+  const paymentMethod = document.getElementById("paymentMethod").value;
+  const transactionNumber =
+    document.getElementById("transactionNumber").value.trim();
+
+  if(!playerId || !paymentMethod || !transactionNumber){
+    showMessage("Please complete all fields.");
+    return;
+  }
+
+  if(!/^[a-zA-Z0-9-]+$/.test(playerId)){
+    showMessage("Please check your Player ID.");
+    return;
+  }
+
+  const button = document.getElementById("submitOrder");
+  button.disabled = true;
+  button.textContent = "Submitting...";
+
+  const {error} = await client
+    .from("orders")
+    .insert({
+      user_id: currentUser.id,
+      product_id: selectedProduct.id,
+      player_id: playerId,
+      payment_method: paymentMethod,
+      amount_htg: selectedProduct.price_htg,
+      payment_status: "Pending",
+      delivery_status: "Pending",
+      transaction_number: transactionNumber
+    });
+
+  button.disabled = false;
+  button.textContent = "Submit Order";
+
+  if(error){
+    showMessage("Order failed: " + error.message);
+    return;
+  }
+
+  showMessage(
+    "Order submitted! Payment is awaiting manual verification.",
+    true
+  );
+
+  document.getElementById("playerId").value = "";
+  document.getElementById("paymentMethod").value = "";
+  document.getElementById("transactionNumber").value = "";
+  selectedProduct = null;
+  document.getElementById("selectedPrice").textContent = "";
+
+  document.querySelectorAll(".product").forEach(el =>
+    el.classList.remove("selected")
+  );
+
+  await loadHistory();
 }
 
-document.getElementById("logoutBtn").addEventListener("click",async()=>{
-await client.auth.signOut();
-window.location.href="login.html";
-});
+async function loadHistory(){
+  const container = document.getElementById("history");
+
+  const {data, error} = await client
+    .from("orders")
+    .select("id, player_id, payment_method, amount_htg, payment_status, delivery_status, created_at")
+    .eq("user_id", currentUser.id)
+    .order("created_at", {ascending:false});
+
+  if(error){
+    container.textContent = "Unable to load order history.";
+    return;
+  }
+
+  container.replaceChildren();
+
+  if(!data || data.length === 0){
+    container.textContent = "No orders yet.";
+    return;
+  }
+
+  data.forEach(order => {
+    const item = document.createElement("div");
+    item.className = "order";
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Player ID: " + order.player_id +
+      " | " + Number(order.amount_htg).toLocaleString() + " HTG" +
+      " | " + order.payment_method;
+
+    const status = document.createElement("p");
+    status.className = "status";
+    status.textContent =
+      "Payment: " + order.payment_status +
+      " | Delivery: " + order.delivery_status;
+
+    const date = document.createElement("p");
+    date.className = "small";
+    date.textContent = order.created_at
+      ? new Date(order.created_at).toLocaleString()
+      : "";
+
+    item.append(details, status, date);
+    container.appendChild(item);
+  });
+}
+
+document.getElementById("submitOrder")
+  .addEventListener("click", submitOrder);
+
+document.getElementById("logoutBtn")
+  .addEventListener("click", async () => {
+    await client.auth.signOut();
+    window.location.href = "login.html";
+  });
 
 loadDashboard();
 </script>
