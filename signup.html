@@ -22,19 +22,28 @@ a{color:#bd75ff}
 <form id="signupForm">
 <input type="text" placeholder="Full Name" required>
 <input type="email" id="email" placeholder="Email Address" required>
-
 <input type="password" id="password" placeholder="Password" minlength="8" required
-
 <button type="submit">Create Account</button>
 </form>
 <p>Already have an account? <a href="login.html">Login</a></p>
 <a href="index.html">Back to Home</a>
 </div>
 <script>
-document.getElementById("signupForm").addEventListener("submit",function(e){
-e.preventDefault();
-alert("Registration is not connected yet. Please check back soon.");
+document.getElementById("signupForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+const { data, error } = await supabaseClient.auth.signUp({
+  email: email,
+  password: password
 });
+
+if (error) {
+  alert(error.message);
+} else {
+  alert("Account created! Please check your email to confirm.");
+}
 </script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 </body>
