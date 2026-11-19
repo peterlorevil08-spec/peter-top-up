@@ -4,84 +4,300 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peter Top Up</title>
+<title>Dashboard - Peter Top Up</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0b1020;color:white;font-family:Arial,sans-serif}
-header{background:#151e35;padding:20px;display:flex;justify-content:space-between;align-items:center}
-h1{color:#38bdf8;font-size:21px;margin:0}
-main{max-width:850px;margin:25px auto;padding:15px}
-.card{background:#151e35;padding:22px;border-radius:14px;margin-bottom:18px}
-h2{color:#38bdf8;margin-top:0}
-p{color:#cbd5e1}
-input,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #334155;border-radius:8px;background:#0b1020;color:white}
-button{background:#38bdf8;color:#07111f;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
-.logout{background:#ef4444;color:white}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-.product{background:#0b1020;border:2px solid #334155;padding:16px;border-radius:12px;cursor:pointer;text-align:center}
-.product.selected{border-color:#38bdf8;background:#102a43}
-.product strong{display:block;color:#38bdf8;font-size:18px;margin-bottom:8px}
-.product span{color:white}
-.small{font-size:13px;color:#94a3b8}
-.notice{background:#102a43;padding:14px;border-radius:9px;margin:12px 0}
-.order{border-bottom:1px solid #334155;padding:12px 0}
-.status{color:#fbbf24;font-weight:bold}
-.order-time{font-size:13px;color:#94a3b8}
-#message{padding:12px;border-radius:8px;display:none;margin-top:12px}
+
+body{
+  margin:0;
+  background:linear-gradient(135deg,#070b18,#101b35,#07111f);
+  color:white;
+  font-family:Arial,sans-serif;
+}
+
+header{
+  background:#101a30;
+  border-bottom:1px solid #263b60;
+  padding:18px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.logo{
+  color:#38bdf8;
+  font-size:23px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.logo span{color:#fbbf24}
+
+main{
+  max-width:950px;
+  margin:25px auto;
+  padding:15px;
+}
+
+.card{
+  background:#121d35;
+  border:1px solid #263b60;
+  padding:23px;
+  border-radius:16px;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+h2{
+  color:#38bdf8;
+  margin-top:0;
+  font-size:20px;
+}
+
+p{color:#cbd5e1;line-height:1.6}
+
+.welcome{
+  background:linear-gradient(120deg,#102a43,#172b4d);
+  border-color:#2563a5;
+}
+
+.welcome h2{color:#fbbf24}
+
+input,select{
+  width:100%;
+  padding:14px;
+  margin:8px 0 16px;
+  border:1px solid #344765;
+  border-radius:9px;
+  background:#1e2c47;
+  color:white;
+  font-size:15px;
+  outline:none;
+}
+
+input:focus,select:focus{border-color:#38bdf8}
+
+label{
+  display:block;
+  color:#cbd5e1;
+  font-weight:bold;
+  font-size:14px;
+}
+
+button{
+  background:linear-gradient(90deg,#0ea5e9,#38bdf8);
+  color:#07111f;
+  border:0;
+  padding:13px 18px;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{transform:translateY(-2px)}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.logout{
+  background:#dc3545;
+  color:white;
+}
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:13px;
+}
+
+.product{
+  background:#0b1428;
+  border:2px solid #344765;
+  padding:18px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  text-align:center;
+  transition:.2s;
+}
+
+.product:hover{
+  border-color:#38bdf8;
+  transform:translateY(-2px);
+}
+
+.product.selected{
+  border-color:#38bdf8;
+  background:#102a43;
+  box-shadow:0 0 15px rgba(56,189,248,.15);
+}
+
+.product strong{
+  display:block;
+  color:#38bdf8;
+  font-size:19px;
+  margin-bottom:9px;
+}
+
+.product span{color:white;font-weight:bold}
+
+.small{
+  font-size:13px;
+  color:#94a3b8;
+}
+
+.notice{
+  background:#102a43;
+  border:1px solid #245078;
+  padding:14px;
+  border-radius:10px;
+  margin:12px 0 18px;
+}
+
+.notice p{margin:7px 0}
+
+#selectedPrice{
+  color:#fbbf24;
+  font-weight:bold;
+  margin-top:15px;
+}
+
+#message{
+  padding:13px;
+  border-radius:9px;
+  display:none;
+  margin-top:15px;
+  overflow-wrap:anywhere;
+}
+
+.order{
+  background:#0b1428;
+  border:1px solid #263b60;
+  border-radius:12px;
+  padding:17px;
+  margin:14px 0;
+}
+
+.order p{margin:9px 0}
+
+.status{
+  color:#fbbf24;
+  font-weight:bold;
+}
+
+.order-time{
+  font-size:13px;
+  color:#94a3b8;
+}
+
+.receipt-btn{
+  margin-top:10px;
+  background:#fbbf24;
+  color:#111827;
+}
+
+.section-number{
+  color:#fbbf24;
+  margin-right:5px;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#64748b;
+  font-size:13px;
+}
+
+@media(max-width:500px){
+  header{padding:15px}
+  .logo{font-size:19px}
+  .card{padding:18px}
+  main{padding:12px}
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>PETER TOP UP</h1>
-<button class="logout" id="logoutBtn">Logout</button>
+  <div class="logo">PETER <span>TOP UP</span></div>
+  <button class="logout" id="logoutBtn">Logout</button>
 </header>
 
 <main>
-<div class="card">
-<h2>Welcome!</h2>
-<p>Email: <span id="customerEmail">Loading...</span></p>
-<p>Choose your Free Fire Diamonds package.</p>
-</div>
 
-<div class="card">
-<h2>1. Select Diamonds 💎</h2>
-<div class="product-grid" id="products">Loading products...</div>
-<p id="selectedPrice"></p>
-</div>
+  <div class="card welcome">
+    <h2>Welcome to Peter Top Up! 💎</h2>
+    <p>Email: <strong id="customerEmail">Loading...</strong></p>
+    <p>Choose your Free Fire Diamonds package and submit your order.</p>
+  </div>
 
-<div class="card">
-<h2>2. Player Information</h2>
-<label>Free Fire Player ID</label>
-<input id="playerId" type="text" placeholder="Enter your Player ID">
-</div>
+  <div class="card">
+    <h2><span class="section-number">01.</span> Select Diamonds 💎</h2>
+    <p class="small">Choose the package you want to purchase.</p>
+    <div class="product-grid" id="products">Loading products...</div>
+    <p id="selectedPrice"></p>
+  </div>
 
-<div class="card">
-<h2>3. Payment Method</h2>
-<select id="paymentMethod">
-<option value="">Choose payment method</option>
-<option value="MonCash">MonCash</option>
-<option value="NatCash">NatCash</option>
-</select>
+  <div class="card">
+    <h2><span class="section-number">02.</span> Player Information</h2>
 
-<div class="notice">
-<p><strong>MonCash:</strong> 31356200</p>
-<p><strong>NatCash:</strong> 35542784</p>
-<p class="small">Send the exact payment amount to the number you selected.</p>
-</div>
+    <label for="playerId">Free Fire Player ID</label>
+    <input
+      id="playerId"
+      type="text"
+      placeholder="Enter your Player ID"
+      autocomplete="off"
+    >
+  </div>
 
-<label>Payment transaction number</label>
-<input id="transactionNumber" type="text" placeholder="Enter transaction number">
+  <div class="card">
+    <h2><span class="section-number">03.</span> Payment Method</h2>
 
-<button id="submitOrder">Submit Order</button>
-<div id="message"></div>
-</div>
+    <label for="paymentMethod">Choose Payment Method</label>
+    <select id="paymentMethod">
+      <option value="">Choose payment method</option>
+      <option value="MonCash">MonCash</option>
+      <option value="NatCash">NatCash</option>
+    </select>
 
-<div class="card">
-<h2>4. Transaction History</h2>
-<div id="history">Loading orders...</div>
-</div>
+    <div class="notice">
+      <p><strong>MonCash:</strong> 31356200</p>
+      <p><strong>NatCash:</strong> 35542784</p>
+      <p class="small">
+        Send the exact payment amount to the number you selected.
+      </p>
+    </div>
+
+    <label for="transactionNumber">Payment Transaction Number</label>
+    <input
+      id="transactionNumber"
+      type="text"
+      placeholder="Enter transaction number"
+      autocomplete="off"
+    >
+
+    <button id="submitOrder">Submit Order</button>
+    <div id="message" role="status"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="section-number">04.</span> Transaction History</h2>
+    <p class="small">Track your payment and delivery status.</p>
+    <div id="history">Loading orders...</div>
+  </div>
+
 </main>
+
+<footer>
+  © 2026 Peter Top Up. All rights reserved.
+</footer>
 
 <script>
 const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
@@ -105,6 +321,16 @@ function formatDate(date){
   return date ? new Date(date).toLocaleString() : "Not recorded";
 }
 
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
 async function loadDashboard(){
   const {data, error} = await client.auth.getUser();
 
@@ -114,6 +340,7 @@ async function loadDashboard(){
   }
 
   currentUser = data.user;
+
   document.getElementById("customerEmail").textContent =
     currentUser.email || "";
 
@@ -147,10 +374,12 @@ async function loadProducts(){
     item.className = "product";
 
     const title = document.createElement("strong");
-    title.textContent = Number(product.diamonds).toLocaleString() + " 💎";
+    title.textContent =
+      Number(product.diamonds).toLocaleString() + " 💎";
 
     const price = document.createElement("span");
-    price.textContent = Number(product.price_htg).toLocaleString() + " HTG";
+    price.textContent =
+      Number(product.price_htg).toLocaleString() + " HTG";
 
     item.append(title, price);
 
@@ -202,43 +431,47 @@ async function submitOrder(){
   button.disabled = true;
   button.textContent = "Submitting...";
 
-  const {error} = await client
-    .from("orders")
-    .insert({
-      user_id: currentUser.id,
-      product_id: selectedProduct.id,
-      player_id: playerId,
-      payment_method: paymentMethod,
-      amount_htg: selectedProduct.price_htg,
-      payment_status: "Pending",
-      delivery_status: "Pending",
-      transaction_number: transactionNumber
-    });
+  try {
+    const {error} = await client
+      .from("orders")
+      .insert({
+        user_id: currentUser.id,
+        product_id: selectedProduct.id,
+        player_id: playerId,
+        payment_method: paymentMethod,
+        amount_htg: selectedProduct.price_htg,
+        payment_status: "Pending",
+        delivery_status: "Pending",
+        transaction_number: transactionNumber
+      });
 
-  button.disabled = false;
-  button.textContent = "Submit Order";
+    if(error) throw error;
 
-  if(error){
+    showMessage(
+      "Order submitted! Payment is awaiting manual verification.",
+      true
+    );
+
+    document.getElementById("playerId").value = "";
+    document.getElementById("paymentMethod").value = "";
+    document.getElementById("transactionNumber").value = "";
+
+    selectedProduct = null;
+
+    document.getElementById("selectedPrice").textContent = "";
+
+    document.querySelectorAll(".product").forEach(el =>
+      el.classList.remove("selected")
+    );
+
+    await loadHistory();
+
+  } catch(error) {
     showMessage("Order failed: " + error.message);
-    return;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Submit Order";
   }
-
-  showMessage(
-    "Order submitted! Payment is awaiting manual verification.",
-    true
-  );
-
-  document.getElementById("playerId").value = "";
-  document.getElementById("paymentMethod").value = "";
-  document.getElementById("transactionNumber").value = "";
-  selectedProduct = null;
-  document.getElementById("selectedPrice").textContent = "";
-
-  document.querySelectorAll(".product").forEach(el =>
-    el.classList.remove("selected")
-  );
-
-  await loadHistory();
 }
 
 async function loadHistory(){
@@ -251,7 +484,8 @@ async function loadHistory(){
     .order("created_at", {ascending:false});
 
   if(error){
-    container.textContent = "Unable to load order history: " + error.message;
+    container.textContent =
+      "Unable to load order history: " + error.message;
     return;
   }
 
@@ -292,53 +526,101 @@ async function loadHistory(){
     delivered.className = "order-time";
     delivered.textContent =
       "Payment Delivered: " + formatDate(order.delivered_at);
-const receiptBtn = document.createElement("button");
-receiptBtn.textContent = "View Receipt";
 
-receiptBtn.addEventListener("click", () => {
-  const receiptWindow = window.open("", "_blank");
+    const receiptBtn = document.createElement("button");
+    receiptBtn.className = "receipt-btn";
+    receiptBtn.textContent = "View Receipt";
 
-  if (!receiptWindow) {
-    alert("Please allow pop-ups to view your receipt.");
-    return;
-  }
+    receiptBtn.addEventListener("click", () => {
+      const receiptWindow = window.open("", "_blank");
 
-  receiptWindow.document.write(`
-    <html>
-    <head>
-      <title>Peter Top Up Receipt</title>
-      <style>
-        body { font-family: Arial; padding: 25px; background: #f1f5f9; }
-        .receipt { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
-        h2 { text-align: center; color: #2563eb; }
-        .line { padding: 12px 0; border-bottom: 1px solid #ddd; }
-        button { width: 100%; padding: 13px; margin-top: 20px; background: #2563eb; color: white; border: 0; border-radius: 8px; }
-        @media print { button { display: none; } }
-      </style>
-    </head>
-    <body>
-      <div class="receipt">
-        <h2>PETER TOP UP</h2>
-        <p style="text-align:center">TRANSACTION RECEIPT</p>
-        <div class="line">Receipt Number: PT-${String(order.id).slice(0, 8).toUpperCase()}</div>
-        <div class="line">Player ID: ${order.player_id}</div>
-        <div class="line">Amount: ${Number(order.amount_htg).toLocaleString()} HTG</div>
-        <div class="line">Payment Method: ${order.payment_method}</div>
-        <div class="line">Payment Status: ${order.payment_status}</div>
-        <div class="line">Delivery Status: ${order.delivery_status}</div>
-        <div class="line">Payment Placed: ${formatDate(order.created_at)}</div>
-        <div class="line">Payment Verified: ${formatDate(order.verified_at)}</div>
-        <div class="line">Payment Delivered: ${formatDate(order.delivered_at)}</div>
-        <button onclick="window.print()">Print / Save as PDF</button>
-      </div>
-    </body>
-    </html>
-  `);
+      if(!receiptWindow){
+        alert("Please allow pop-ups to view your receipt.");
+        return;
+      }
 
-  receiptWindow.document.close();
-});
- item.append(details, status, placed, verified, delivered, receiptBtn);
-  container.appendChild(item);
+      const receiptNumber =
+        "PT-" + String(order.id).slice(0,8).toUpperCase();
+
+      receiptWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Peter Top Up Receipt</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body{
+              font-family:Arial,sans-serif;
+              padding:25px;
+              background:#f1f5f9;
+            }
+            .receipt{
+              max-width:500px;
+              margin:auto;
+              background:white;
+              padding:25px;
+              border-radius:12px;
+              color:#111827;
+            }
+            h2{
+              text-align:center;
+              color:#2563eb;
+            }
+            .line{
+              padding:12px 0;
+              border-bottom:1px solid #ddd;
+              overflow-wrap:anywhere;
+            }
+            button{
+              width:100%;
+              padding:13px;
+              margin-top:20px;
+              background:#2563eb;
+              color:white;
+              border:0;
+              border-radius:8px;
+              cursor:pointer;
+            }
+            @media print{
+              button{display:none}
+              body{background:white}
+            }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <h2>PETER TOP UP</h2>
+            <p style="text-align:center">TRANSACTION RECEIPT</p>
+
+            <div class="line">Receipt Number: ${escapeHtml(receiptNumber)}</div>
+            <div class="line">Player ID: ${escapeHtml(order.player_id)}</div>
+            <div class="line">Amount: ${Number(order.amount_htg).toLocaleString()} HTG</div>
+            <div class="line">Payment Method: ${escapeHtml(order.payment_method)}</div>
+            <div class="line">Payment Status: ${escapeHtml(order.payment_status)}</div>
+            <div class="line">Delivery Status: ${escapeHtml(order.delivery_status)}</div>
+            <div class="line">Payment Placed: ${escapeHtml(formatDate(order.created_at))}</div>
+            <div class="line">Payment Verified: ${escapeHtml(formatDate(order.verified_at))}</div>
+            <div class="line">Payment Delivered: ${escapeHtml(formatDate(order.delivered_at))}</div>
+
+            <button onclick="window.print()">Print / Save as PDF</button>
+          </div>
+        </body>
+        </html>
+      `);
+
+      receiptWindow.document.close();
+    });
+
+    item.append(
+      details,
+      status,
+      placed,
+      verified,
+      delivered,
+      receiptBtn
+    );
+
+    container.appendChild(item);
   });
 }
 
@@ -353,6 +635,6 @@ document.getElementById("logoutBtn")
 
 loadDashboard();
 </script>
+
 </body>
 </html>
-
