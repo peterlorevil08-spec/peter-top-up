@@ -320,6 +320,7 @@ receiptBtn.addEventListener("click", () => {
       <div class="receipt">
         <h2>PETER TOP UP</h2>
         <p style="text-align:center">TRANSACTION RECEIPT</p>
+        <div class="line">Receipt Number: PT-${String(order.id).slice(0, 8).toUpperCase()}</div>
         <div class="line">Player ID: ${order.player_id}</div>
         <div class="line">Amount: ${Number(order.amount_htg).toLocaleString()} HTG</div>
         <div class="line">Payment Method: ${order.payment_method}</div>
