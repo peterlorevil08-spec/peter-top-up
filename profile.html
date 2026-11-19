@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile - Peter Top Up</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#070b18,#101b35,#07111f);color:white;font-family:Arial,sans-serif}
+header{background:#101a30;border-bottom:1px solid #263b60;padding:18px 5%;display:flex;justify-content:space-between;align-items:center}
+.logo{color:#38bdf8;font-size:22px;font-weight:900}
+.logo span{color:#fbbf24}
+main{max-width:750px;margin:30px auto;padding:15px}
+.card{background:#121d35;border:1px solid #263b60;padding:23px;border-radius:16px;margin-bottom:20px}
+h2{color:#38bdf8;margin-top:0}
+p{color:#cbd5e1;line-height:1.6;overflow-wrap:anywhere}
+.avatar{width:110px;height:110px;border-radius:50%;border:3px solid #38bdf8;background:#0b1428;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:15px}
+.avatar img{width:100%;height:100%;object-fit:cover;display:none}
+button{background:linear-gradient(90deg,#0ea5e9,#38bdf8);color:#07111f;border:0;padding:13px 18px;border-radius:9px;font-weight:bold;cursor:pointer}
+.back{background:#fbbf24}
+input{width:100%;padding:14px;margin:8px 0 16px;border:1px solid #344765;border-radius:9px;background:#1e2c47;color:white;font-size:15px}
+label{display:block;color:#cbd5e1;font-weight:bold;font-size:14px}
+#message{display:none;padding:13px;border-radius:9px;margin-top:15px;overflow-wrap:anywhere}
+.small{font-size:13px;color:#94a3b8}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">PETER <span>TOP UP</span></div>
+<button class="back" onclick="location.href='dashboard.html'">Back to Dashboard</button>
+</header>
+<main>
+<div class="card">
+<h2>My Profile 👤</h2>
+<div class="avatar"><span id="initial">P</span><img id="photo" alt="Profile photo"></div>
+<p><strong id="name">Loading...</strong></p>
+<p id="email"></p>
+<p class="small" id="created"></p>
+</div>
+
+<div class="card">
+<h2>My Orders 💎</h2>
+<p id="orderCount">Loading...</p>
+<p id="totalSpent"></p>
+<div id="history">Loading transactions...</div>
+</div>
+
+<div class="card">
+<h2>Security 🔒</h2>
+<p>Change your account password below.</p>
+<label for="newPassword">New Password</label>
+<input type="password" id="newPassword" minlength="8" placeholder="At least 8 characters">
+<label for="confirmPassword">Confirm New Password</label>
+<input type="password" id="confirmPassword" minlength="8" placeholder="Enter password again">
+<button id="changePassword">Change Password</button>
+<div id="message" role="status"></div>
+</div>
+</main>
+<script>
+const SUPABASE_URL="https://hfehedbezwhftqzsfpwf.supabase.co";
+const SUPABASE_KEY="sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentUser=null;
+
+function msg(text,success=false){
+const box=document.getElementById("message");
+box.textContent=text;
+box.style.display="block";
+box.style.background=success?"#14532d":"#7f1d1d";
+}
+
+function dateFormat(value){
+return value?new Date(value).toLocaleDateString():"Not recorded";
+}
+
+async function loadProfile(){
+const {data,error}=await client.auth.getUser();
+if(error||!data.user){location.href="login.html";return;}
+currentUser=data.user;
+
+document.getElementById("name").textContent=
+currentUser.user_metadata?.full_name||"Peter Top Up Customer";
+document.getElementById("email").textContent="Email: "+(currentUser.email||"");
+document.getElementById("created").textContent=
+"Account created: "+dateFormat(currentUser.created_at);
+
+document.getElementById("initial").textContent=
+(currentUser.email||"P").charAt(0).toUpperCase();
+
+const {data:avatarData}=client.storage.from("avatars")
+.getPublicUrl(currentUser.id+"/avatar");
+const photo=document.getElementById("photo");
+photo.onload=()=>{photo.style.display="block";document.getElementById("initial").style.display="none";};
+photo.onerror=()=>{photo.style.display="none";document.getElementById("initial").style.display="block";};
+photo.src=avatarData.publicUrl+"?t="+Date.now();
+
+const {data:orders,error:orderError}=await client.from("orders")
+.select("id,player_id,payment_method,amount_htg,payment_status,delivery_status,created_at")
+.eq("user_id",currentUser.id).order("created_at",{ascending:false});
+
+const history=document.getElementById("history");
+if(orderError){history.textContent="Unable to load transactions.";return;}
+const count=orders?.length||0;
+const total=(orders||[]).reduce((sum,o)=>sum+(Number(o.amount_htg)||0),0);
+document.getElementById("orderCount").textContent="Total orders: "+count;
+document.getElementById("totalSpent").textContent="Total order value: "+total.toLocaleString()+" HTG";
+history.replaceChildren();
+
+if(!count){history.textContent="No transactions yet.";return;}
+orders.forEach(order=>{
+const item=document.createElement("div");
+item.style.cssText="background:#0b1428;border:1px solid #263b60;border-radius:10px;padding:14px;margin:12px 0";
+const details=document.createElement("p");
+details.textContent="Player ID: "+order.player_id+" | "+Number(order.amount_htg).toLocaleString()+" HTG | "+order.payment_method;
+const status=document.createElement("p");
+status.textContent="Payment: "+order.payment_status+" | Delivery: "+order.delivery_status;
+const date=document.createElement("p");
+date.className="small";
+date.textContent="Date: "+new Date(order.created_at).toLocaleString();
+item.append(details,status,date);
+history.appendChild(item);
+});
+}
+
+document.getElementById("changePassword").addEventListener("click",async()=>{
+const password=document.getElementById("newPassword").value;
+const confirm=document.getElementById("confirmPassword").value;
+if(password.length<8){msg("Password must contain at least 8 characters.");return;}
+if(password!==confirm){msg("Passwords do not match.");return;}
+const button=document.getElementById("changePassword");
+button.disabled=true;
+button.textContent="Updating...";
+const {error}=await client.auth.updateUser({password:password});
+button.disabled=false;
+button.textContent="Change Password";
+if(error){msg("Password update failed: "+error.message);return;}
+document.getElementById("newPassword").value="";
+document.getElementById("confirmPassword").value="";
+msg("Your password has been updated successfully!",true);
+});
+
+loadProfile();
+</script>
+</body>
+</html>
