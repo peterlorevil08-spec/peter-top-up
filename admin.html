@@ -163,7 +163,11 @@ button:disabled{
     <h1>ADMIN DASHBOARD</h1>
     <p>Manage customer orders, verify payments and confirm deliveries.</p>
   </div>
-
+<div class="card">
+  <h2>Wallet Deposit Requests 💰</h2>
+  <p>Review customer deposits and verify or reject payments.</p>
+  <div id="walletRequests">Loading wallet requests...</div>
+</div>
   <div class="card">
     <h2>All Customer Orders</h2>
     <div id="orders">Loading orders...</div>
@@ -345,6 +349,109 @@ async function loadOrders(){
   });
 }
 
+async function loadWalletRequests(){
+  const box=document.getElementById("walletRequests");
+  box.textContent="Loading wallet requests...";
+
+  const {data,error}=await db
+    .from("wallet_transactions")
+    .select("id,user_id,amount_htg,payment_method,transaction_number,status,created_at")
+    .eq("transaction_type","deposit")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    box.textContent="Wallet error: "+error.message;
+    return;
+  }
+
+  box.replaceChildren();
+
+  if(!data||data.length===0){
+    box.textContent="No wallet deposit requests found.";
+    return;
+  }
+
+  data.forEach(transaction=>{
+    const item=document.createElement("div");
+    item.className="order";
+
+    const title=document.createElement("p");
+    title.className="order-title";
+    title.textContent="DEPOSIT #"+transaction.id.slice(0,8).toUpperCase();
+
+    const amount=document.createElement("p");
+    amount.textContent="Amount: "+Number(transaction.amount_htg).toLocaleString()+" HTG";
+
+    const method=document.createElement("p");
+    method.textContent="Method: "+transaction.payment_method;
+
+    const number=document.createElement("p");
+    number.textContent="Transaction Number: "+transaction.transaction_number;
+
+    const customer=document.createElement("p");
+    customer.className="customer";
+    customer.textContent="Customer ID: "+transaction.user_id;
+
+    const date=document.createElement("p");
+    date.className="time";
+    date.textContent="Submitted: "+formatDate(transaction.created_at);
+
+    const status=document.createElement("p");
+    status.className="status";
+    status.textContent="Status: "+transaction.status.toUpperCase();
+
+    item.append(title,amount,method,number,customer,date,status);
+
+    if(transaction.status==="pending"){
+      const verify=document.createElement("button");
+      verify.className="verify";
+      verify.textContent="Verify Deposit";
+      verify.onclick=()=>processWalletDeposit(transaction.id,"verify");
+
+      const reject=document.createElement("button");
+      reject.className="logout";
+      reject.textContent="Reject Deposit";
+      reject.onclick=()=>processWalletDeposit(transaction.id,"reject");
+
+      const actions=document.createElement("div");
+      actions.className="actions";
+      actions.append(verify,reject);
+      item.appendChild(actions);
+    }
+
+    box.appendChild(item);
+  });
+}
+
+async function processWalletDeposit(id,action){
+  const confirmed=confirm(
+    action==="verify"
+      ?"Are you sure you want to verify this deposit and add the money to the customer's wallet?"
+      :"Are you sure you want to reject this deposit?"
+  );
+
+  if(!confirmed)return;
+
+  const functionName=action==="verify"
+    ?"verify_wallet_deposit"
+    :"reject_wallet_deposit";
+
+  const {error}=await db.rpc(functionName,{
+    p_transaction_id:id
+  });
+
+  if(error){
+    alert("Wallet update failed: "+error.message);
+    return;
+  }
+
+  alert(action==="verify"
+    ?"Deposit verified successfully!"
+    :"Deposit rejected successfully!");
+
+  await loadWalletRequests();
+}
+
 async function updateOrder(id,changes){
   const {error} = await db
     .from("orders")
@@ -359,7 +466,7 @@ async function updateOrder(id,changes){
   alert("Order updated successfully!");
   await loadOrders();
 }
-
+await loadWalletRequests();
 document.getElementById("logout").onclick = async () => {
   await db.auth.signOut();
   location.href = "login.html";
