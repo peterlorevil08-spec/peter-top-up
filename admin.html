@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peter Top Up - Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;background:#0b1020;color:white;font-family:Arial;padding:20px}
+h1,h2{color:#38bdf8}
+.card{background:#151e35;padding:18px;border-radius:12px;margin:15px 0}
+button{padding:10px;margin:5px;border:0;border-radius:7px;cursor:pointer;font-weight:bold}
+.verify{background:#38bdf8}
+.deliver{background:#22c55e}
+.logout{background:#ef4444;color:white}
+.order{border-bottom:1px solid #334155;padding:12px 0}
+small{color:#94a3b8}
+</style>
+</head>
+<body>
+
+<h1>PETER TOP UP - ADMIN</h1>
+<button class="logout" id="logout">Logout</button>
+
+<div class="card">
+<h2>All Customer Orders</h2>
+<div id="orders">Loading orders...</div>
+</div>
+
+<script>
+const URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
+const KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
+const db = window.supabase.createClient(URL, KEY);
+
+async function start(){
+  const {data,error} = await db.auth.getUser();
+
+  if(error || !data.user){
+    location.href = "login.html";
+    return;
+  }
+
+  const {data:profile,error:profileError} = await db
+    .from("profiles")
+    .select("role")
+    .eq("id",data.user.id)
+    .single();
+
+  if(profileError || profile.role !== "admin"){
+    document.getElementById("orders").textContent =
+      "Access denied. Admin only.";
+    return;
+  }
+
+  loadOrders();
+}
+
+async function loadOrders(){
+  const box = document.getElementById("orders");
+  box.textContent = "Loading...";
+
+  const {data,error} = await db
+    .from("orders")
+    .select("id,user_id,player_id,payment_method,amount_htg,payment_status,delivery_status,transaction_number,created_at")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    box.textContent = "Error: " + error.message;
+    return;
+  }
+
+  box.replaceChildren();
+
+  if(!data || data.length === 0){
+    box.textContent = "No orders found.";
+    return;
+  }
+
+  data.forEach(order => {
+    const item = document.createElement("div");
+    item.className = "order";
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Player ID: " + order.player_id +
+      " | Amount: " + order.amount_htg + " HTG";
+
+    const payment = document.createElement("p");
+    payment.textContent =
+      "Method: " + order.payment_method +
+      " | Transaction: " + (order.transaction_number || "None");
+
+    const status = document.createElement("p");
+    status.textContent =
+      "Payment: " + order.payment_status +
+      " | Delivery: " + order.delivery_status;
+
+    const user = document.createElement("small");
+    user.textContent = "Customer ID: " + order.user_id;
+
+    const verify = document.createElement("button");
+    verify.className = "verify";
+    verify.textContent = "Confirm Payment";
+    verify.disabled = order.payment_status === "Verified";
+    verify.onclick = () => updateOrder(order.id,{
+      payment_status:"Verified"
+    });
+
+    const deliver = document.createElement("button");
+    deliver.className = "deliver";
+    deliver.textContent = "Mark Delivered";
+    deliver.disabled = order.delivery_status === "Delivered";
+    deliver.onclick = () => updateOrder(order.id,{
+      delivery_status:"Delivered"
+    });
+
+    item.append(details,payment,status,user,document.createElement("br"),
+      verify,deliver);
+    box.appendChild(item);
+  });
+}
+
+async function updateOrder(id,changes){
+  const {error} = await db
+    .from("orders")
+    .update(changes)
+    .eq("id",id);
+
+  if(error){
+    alert("Update failed: " + error.message);
+    return;
+  }
+
+  alert("Order updated!");
+  loadOrders();
+}
+
+document.getElementById("logout").onclick = async () => {
+  await db.auth.signOut();
+  location.href = "login.html";
+};
+
+start();
+</script>
+</body>
+</html>
