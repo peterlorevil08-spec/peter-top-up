@@ -33,7 +33,8 @@ const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co".trim();
 const SUPABASE_KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB".trim();
 
 console.log("Supabase URL:", SUPABASE_URL);
-
+console.log("URL TEST:", JSON.stringify(SUPABASE_URL));
+console.log("SUPABASE LIBRARY:", typeof window.supabase);
 const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
