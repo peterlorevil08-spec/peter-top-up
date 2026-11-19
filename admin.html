@@ -212,12 +212,11 @@ async function start(){
     return;
   }
 
-  if(!profile){
+ if!profile){
     document.getElementById("orders").textContent =
       "No admin profile found.";
     return;
   }
-
   if(String(profile.role).trim().toLowerCase() !== "admin"){
     document.getElementById("orders").textContent =
       "Access denied.";
