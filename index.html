@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peter Top Up</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #080610;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #302044;
+}
+.logo {
+  color: #b56aff;
+  font-size: 23px;
+  font-weight: bold;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 12px;
+  font-size: 13px;
+}
+.hero {
+  text-align: center;
+  padding: 75px 18px;
+  background: radial-gradient(circle, #35105c, #080610 70%);
+}
+.hero h1 {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+.hero h1 span { color: #bd75ff; }
+.hero p { color: #c5b8d2; }
+.btn {
+  display: inline-block;
+  background: #922eff;
+  color: white;
+  padding: 13px 24px;
+  border-radius: 9px;
+  text-decoration: none;
+  margin-top: 15px;
+  border: none;
+}
+section { padding: 30px 18px; }
+h2 { text-align: center; color: #c68aff; }
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 15px;
+  max-width: 850px;
+  margin: 25px auto;
+}
+.card {
+  background: #171020;
+  border: 1px solid #66319a;
+  padding: 22px 12px;
+  border-radius: 14px;
+  text-align: center;
+}
+.card h3 { color: #d5a8ff; }
+.card p { color: #bdb1c8; font-size: 13px; }
+.card button {
+  background: #922eff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 7px;
+}
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #9889a5;
+  border-top: 1px solid #302044;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PETER TOP UP</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#products">Products</a>
+  </nav>
+</header>
+
+<div class="hero" id="home">
+  <h1>Welcome to <span>Peter Top Up</span></h1>
+  <p>Fast, Simple and Reliable Digital Top Up.</p>
+  <a class="btn" href="#products">Explore Products</a>
+</div>
+
+<section id="products">
+  <h2>Our Products</h2>
+  <div class="products">
+    <div class="card">
+      <h3>Mobile Top Up</h3>
+      <p>Mobile recharge services</p>
+      <button>Coming Soon</button>
+    </div>
+    <div class="card">
+      <h3>Internet Data</h3>
+      <p>Data packages</p>
+      <button>Coming Soon</button>
+    </div>
+    <div class="card">
+      <h3>Gift Cards</h3>
+      <p>Digital gift cards</p>
+      <button>Coming Soon</button>
+    </div>
+    <div class="card">
+      <h3>Game Credits</h3>
+      <p>Gaming top up</p>
+      <button>Coming Soon</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Peter Top Up. All rights reserved.</p>
+  <p>Powered by Peter Top Up</p>
+</footer>
+
+</body>
+</html>
