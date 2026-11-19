@@ -16,6 +16,7 @@ button{padding:10px;margin:5px;border:0;border-radius:7px;cursor:pointer;font-we
 .logout{background:#ef4444;color:white}
 .order{border-bottom:1px solid #334155;padding:12px 0}
 small{color:#94a3b8}
+.time{color:#cbd5e1;font-size:14px}
 </style>
 </head>
 <body>
@@ -32,55 +33,57 @@ small{color:#94a3b8}
 const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co".trim();
 const SUPABASE_KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB".trim();
 
-console.log("Supabase URL:", SUPABASE_URL);
-console.log("URL TEST:", JSON.stringify(SUPABASE_URL));
-console.log("SUPABASE LIBRARY:", typeof window.supabase);
 const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-async function start(){
-  const { data: authData, error: authError } = await db.auth.getUser();
+function formatDate(date){
+  return date ? new Date(date).toLocaleString() : "Not recorded";
+}
 
-  if (authError || !authData.user) {
+async function start(){
+  const {data:authData,error:authError} = await db.auth.getUser();
+
+  if(authError || !authData.user){
     location.href = "login.html";
     return;
   }
 
-  const { data: profile, error: profileError } = await db
+  const {data:profile,error:profileError} = await db
     .from("profiles")
     .select("role")
-    .eq("id", authData.user.id)
+    .eq("id",authData.user.id)
     .maybeSingle();
 
-  if (profileError) {
+  if(profileError){
     document.getElementById("orders").textContent =
       "Profile error: " + profileError.message;
     return;
   }
 
-  if (!profile) {
+  if(!profile){
     document.getElementById("orders").textContent =
-      "No admin profile found for this account.";
+      "No admin profile found.";
     return;
   }
 
-  if (String(profile.role).trim().toLowerCase() !== "admin") {
+  if(String(profile.role).trim().toLowerCase() !== "admin"){
     document.getElementById("orders").textContent =
-      "Access denied. Your role is: " + profile.role;
+      "Access denied.";
     return;
   }
 
   loadOrders();
 }
+
 async function loadOrders(){
   const box = document.getElementById("orders");
   box.textContent = "Loading...";
 
   const {data,error} = await db
     .from("orders")
-    .select("id,user_id,player_id,payment_method,amount_htg,payment_status,delivery_status,transaction_number,created_at,delivered_at")
+    .select("id,user_id,player_id,payment_method,amount_htg,payment_status,delivery_status,transaction_number,created_at,delivered_at,verified_at")
     .order("created_at",{ascending:false});
 
   if(error){
@@ -114,6 +117,21 @@ async function loadOrders(){
       "Payment: " + order.payment_status +
       " | Delivery: " + order.delivery_status;
 
+    const placed = document.createElement("p");
+    placed.className = "time";
+    placed.textContent =
+      "Payment Placed: " + formatDate(order.created_at);
+
+    const verified = document.createElement("p");
+    verified.className = "time";
+    verified.textContent =
+      "Payment Verified: " + formatDate(order.verified_at);
+
+    const deliveredTime = document.createElement("p");
+    deliveredTime.className = "time";
+    deliveredTime.textContent =
+      "Payment Delivered: " + formatDate(order.delivered_at);
+
     const user = document.createElement("small");
     user.textContent = "Customer ID: " + order.user_id;
 
@@ -122,7 +140,8 @@ async function loadOrders(){
     verify.textContent = "Confirm Payment";
     verify.disabled = order.payment_status === "Verified";
     verify.onclick = () => updateOrder(order.id,{
-      payment_status:"Verified"
+      payment_status:"Verified",
+      verified_at:new Date().toISOString()
     });
 
     const deliver = document.createElement("button");
@@ -130,11 +149,23 @@ async function loadOrders(){
     deliver.textContent = "Mark Delivered";
     deliver.disabled = order.delivery_status === "Delivered";
     deliver.onclick = () => updateOrder(order.id,{
-      delivery_status:"Delivered"
+      delivery_status:"Delivered",
+      delivered_at:new Date().toISOString()
     });
 
-    item.append(details,payment,status,user,document.createElement("br"),
-      verify,deliver);
+    item.append(
+      details,
+      payment,
+      status,
+      placed,
+      verified,
+      deliveredTime,
+      user,
+      document.createElement("br"),
+      verify,
+      deliver
+    );
+
     box.appendChild(item);
   });
 }
