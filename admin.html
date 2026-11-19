@@ -80,7 +80,7 @@ async function loadOrders(){
 
   const {data,error} = await db
     .from("orders")
-    .select("id,user_id,player_id,payment_method,amount_htg,payment_status,delivery_status,transaction_number,created_at")
+    .select("id,user_id,player_id,payment_method,amount_htg,payment_status,delivery_status,transaction_number,created_at,delivered_at")
     .order("created_at",{ascending:false});
 
   if(error){
