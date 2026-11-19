@@ -29,9 +29,15 @@ small{color:#94a3b8}
 </div>
 
 <script>
-const URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
-const KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
-const db = window.supabase.createClient(URL, KEY);
+const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co".trim();
+const SUPABASE_KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB".trim();
+
+console.log("Supabase URL:", SUPABASE_URL);
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 async function start(){
   const {data,error} = await db.auth.getUser();
