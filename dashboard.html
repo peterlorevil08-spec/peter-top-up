@@ -1,4 +1,4 @@
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +27,7 @@ button{background:#38bdf8;color:#07111f;border:0;padding:13px 18px;border-radius
 .notice{background:#102a43;padding:14px;border-radius:9px;margin:12px 0}
 .order{border-bottom:1px solid #334155;padding:12px 0}
 .status{color:#fbbf24;font-weight:bold}
+.order-time{font-size:13px;color:#94a3b8}
 #message{padding:12px;border-radius:8px;display:none;margin-top:12px}
 </style>
 </head>
@@ -45,9 +46,7 @@ button{background:#38bdf8;color:#07111f;border:0;padding:13px 18px;border-radius
 
 <div class="card">
 <h2>1. Select Diamonds 💎</h2>
-<div class="product-grid" id="products">
-Loading products...
-</div>
+<div class="product-grid" id="products">Loading products...</div>
 <p id="selectedPrice"></p>
 </div>
 
@@ -100,6 +99,10 @@ function showMessage(message, success=false){
   box.textContent = message;
   box.style.display = "block";
   box.style.background = success ? "#14532d" : "#7f1d1d";
+}
+
+function formatDate(date){
+  return date ? new Date(date).toLocaleString() : "Not recorded";
 }
 
 async function loadDashboard(){
@@ -243,12 +246,12 @@ async function loadHistory(){
 
   const {data, error} = await client
     .from("orders")
-    .select("id, player_id, payment_method, amount_htg, payment_status, delivery_status, created_at")
+    .select("id,player_id,payment_method,amount_htg,payment_status,delivery_status,created_at,verified_at,delivered_at")
     .eq("user_id", currentUser.id)
     .order("created_at", {ascending:false});
 
   if(error){
-    container.textContent = "Unable to load order history.";
+    container.textContent = "Unable to load order history: " + error.message;
     return;
   }
 
@@ -275,13 +278,22 @@ async function loadHistory(){
       "Payment: " + order.payment_status +
       " | Delivery: " + order.delivery_status;
 
-    const date = document.createElement("p");
-    date.className = "small";
-    date.textContent = order.created_at
-      ? new Date(order.created_at).toLocaleString()
-      : "";
+    const placed = document.createElement("p");
+    placed.className = "order-time";
+    placed.textContent =
+      "Payment Placed: " + formatDate(order.created_at);
 
-    item.append(details, status, date);
+    const verified = document.createElement("p");
+    verified.className = "order-time";
+    verified.textContent =
+      "Payment Verified: " + formatDate(order.verified_at);
+
+    const delivered = document.createElement("p");
+    delivered.className = "order-time";
+    delivered.textContent =
+      "Payment Delivered: " + formatDate(order.delivered_at);
+
+    item.append(details, status, placed, verified, delivered);
     container.appendChild(item);
   });
 }
@@ -299,3 +311,4 @@ loadDashboard();
 </script>
 </body>
 </html>
+
