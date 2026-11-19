@@ -1,65 +1,324 @@
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Peter Top Up</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: white;
-    }
-    header {
-      padding: 22px;
-      background: #151e35;
-      text-align: center;
-    }
-    header h1 { color: #38bdf8; margin: 0; }
-    main {
-      max-width: 700px;
-      margin: 50px auto;
-      padding: 20px;
-      text-align: center;
-    }
-    .card {
-      background: #151e35;
-      padding: 30px;
-      border-radius: 16px;
-    }
-    h2 { color: #38bdf8; }
-    p { color: #cbd5e1; line-height: 1.6; }
-    a {
-      display: inline-block;
-      padding: 13px 22px;
-      margin: 10px 5px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .signup { background: #38bdf8; color: #07111f; }
-    .login { background: #334155; color: white; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>PETER TOP UP</h1>
-    <p>Fast, Simple and Reliable Top Up</p>
-  </header>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peter Top Up | Free Fire Diamonds</title>
 
-  <main>
-    <div class="card">
-      <h2>Welcome to Peter Top Up</h2>
-      <p>
-        Buy your favorite digital top-up services
-        quickly and securely.
-      </p>
-      <a class="signup" href="signup.html">Create Account</a>
-      <a class="login" href="login.html">Login</a>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #080d1b;
+  color: #fff;
+  line-height: 1.6;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 7%;
+  background: #101a30;
+  border-bottom: 1px solid #263653;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 900;
+  color: #38bdf8;
+}
+
+.logo span {
+  color: #fbbf24;
+}
+
+nav a {
+  color: #dbeafe;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+nav a:hover {
+  color: #38bdf8;
+}
+
+.hero {
+  padding: 90px 20px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at top, #153c68 0%, transparent 65%),
+    #080d1b;
+}
+
+.tag {
+  display: inline-block;
+  padding: 7px 15px;
+  border: 1px solid #2563eb;
+  border-radius: 30px;
+  color: #7dd3fc;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 22px;
+}
+
+.hero h1 {
+  font-size: clamp(38px, 7vw, 65px);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hero h1 span {
+  color: #38bdf8;
+}
+
+.hero p {
+  max-width: 550px;
+  margin: auto;
+  color: #aabbd2;
+  font-size: 17px;
+}
+
+.buttons {
+  margin-top: 32px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 25px;
+  margin: 7px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: .2s;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+}
+
+.primary {
+  background: linear-gradient(135deg,#38bdf8,#2563eb);
+  color: white;
+}
+
+.secondary {
+  background: #18243b;
+  border: 1px solid #3b506f;
+  color: white;
+}
+
+section {
+  padding: 65px 7%;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.section-title h2 {
+  font-size: 30px;
+  color: #38bdf8;
+}
+
+.section-title p {
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.feature {
+  background: #111c32;
+  border: 1px solid #263653;
+  padding: 28px 22px;
+  border-radius: 15px;
+  text-align: center;
+  transition: .2s;
+}
+
+.feature:hover {
+  border-color: #38bdf8;
+  transform: translateY(-4px);
+}
+
+.feature .icon {
+  font-size: 35px;
+  margin-bottom: 12px;
+}
+
+.feature h3 {
+  color: #fbbf24;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  color: #aabbd2;
+  font-size: 14px;
+}
+
+.how {
+  background: #0e172a;
+}
+
+.cta {
+  max-width: 850px;
+  margin: auto;
+  padding: 40px 20px;
+  text-align: center;
+  border: 1px solid #28517a;
+  border-radius: 18px;
+  background: linear-gradient(135deg,#142b49,#111a30);
+}
+
+.cta h2 {
+  font-size: 30px;
+  color: #fbbf24;
+  margin-bottom: 12px;
+}
+
+.cta p {
+  color: #cbd5e1;
+}
+
+footer {
+  padding: 28px 15px;
+  text-align: center;
+  background: #050914;
+  border-top: 1px solid #263653;
+}
+
+footer strong {
+  color: #38bdf8;
+}
+
+footer p {
+  color: #718096;
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+@media(max-width:600px) {
+  header {
+    padding: 17px 5%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  nav a {
+    margin: 0 8px;
+    font-size: 13px;
+  }
+
+  .hero {
+    padding: 65px 18px;
+  }
+
+  section {
+    padding: 50px 18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">PETER <span>TOP UP</span></div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="login.html">Login</a>
+    <a href="signup.html">Register</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="tag">WELCOME TO PETER TOP UP</div>
+
+  <h1>LEVEL UP YOUR<br><span>FREE FIRE GAME</span></h1>
+
+  <p>
+    Get your favorite Free Fire Diamonds through
+    a simple and convenient top-up experience.
+  </p>
+
+  <div class="buttons">
+    <a class="btn primary" href="signup.html">GET STARTED →</a>
+    <a class="btn secondary" href="login.html">LOGIN</a>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">
+    <h2>WHY PETER TOP UP?</h2>
+    <p>A simple way to manage your top-up orders.</p>
+  </div>
+
+  <div class="features">
+
+    <div class="feature">
+      <div class="icon">💎</div>
+      <h3>Diamond Packages</h3>
+      <p>Explore available Free Fire Diamond packages.</p>
     </div>
-  </main>
+
+    <div class="feature">
+      <div class="icon">📱</div>
+      <h3>Easy Payments</h3>
+      <p>Use the available MonCash and NatCash payment options.</p>
+    </div>
+
+    <div class="feature">
+      <div class="icon">📋</div>
+      <h3>Order Tracking</h3>
+      <p>Follow your payment and delivery status from your dashboard.</p>
+    </div>
+
+    <div class="feature">
+      <div class="icon">🧾</div>
+      <h3>Digital Receipts</h3>
+      <p>View and print your transaction receipts.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="how">
+  <div class="cta">
+    <h2>READY TO GET STARTED?</h2>
+    <p>Create your account and explore the available top-up packages.</p>
+
+    <div class="buttons">
+      <a class="btn primary" href="signup.html">CREATE YOUR ACCOUNT</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>PETER TOP UP</strong>
+  <p>Free Fire Top Up Platform</p>
+  <p>© 2026 Peter Top Up. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
