@@ -9,7 +9,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(135deg,#070b18,#101b35,#07111f);color:white;font-family:Arial,sans-serif}
-header{background:#101a30;border-bottom:1px solid #263b60;padding:18px 5%;display:flex;justify-content:space-between;align-items:center}
+header{background:#101a30;border-bottom:1px solid #263b60;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .logo{color:#38bdf8;font-size:22px;font-weight:900}
 .logo span{color:#fbbf24}
 main{max-width:750px;margin:30px auto;padding:15px}
@@ -19,11 +19,16 @@ p{color:#cbd5e1;line-height:1.6;overflow-wrap:anywhere}
 .avatar{width:110px;height:110px;border-radius:50%;border:3px solid #38bdf8;background:#0b1428;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:15px}
 .avatar img{width:100%;height:100%;object-fit:cover;display:none}
 button{background:linear-gradient(90deg,#0ea5e9,#38bdf8);color:#07111f;border:0;padding:13px 18px;border-radius:9px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 .back{background:#fbbf24}
-input{width:100%;padding:14px;margin:8px 0 16px;border:1px solid #344765;border-radius:9px;background:#1e2c47;color:white;font-size:15px}
+input,select{width:100%;padding:14px;margin:8px 0 16px;border:1px solid #344765;border-radius:9px;background:#1e2c47;color:white;font-size:15px}
 label{display:block;color:#cbd5e1;font-weight:bold;font-size:14px}
-#message{display:none;padding:13px;border-radius:9px;margin-top:15px;overflow-wrap:anywhere}
+#message,#walletMessage{display:none;padding:13px;border-radius:9px;margin-top:15px;overflow-wrap:anywhere}
 .small{font-size:13px;color:#94a3b8}
+.balance{font-size:32px;font-weight:bold;color:#fbbf24;margin:10px 0}
+.deposit-item{background:#0b1428;border:1px solid #263b60;border-radius:10px;padding:14px;margin:12px 0}
+.status{font-weight:bold;color:#38bdf8}
+.payment-info{background:#0b1428;border:1px solid #263b60;padding:14px;border-radius:10px;margin:12px 0}
 </style>
 </head>
 <body>
@@ -31,22 +36,64 @@ label{display:block;color:#cbd5e1;font-weight:bold;font-size:14px}
 <div class="logo">PETER <span>TOP UP</span></div>
 <button class="back" onclick="location.href='dashboard.html'">Back to Dashboard</button>
 </header>
+
 <main>
+
 <div class="card">
 <h2>My Profile 👤</h2>
-<div class="avatar"><span id="initial">P</span><img id="photo" alt="Profile photo"></div>
+<div class="avatar">
+<span id="initial">P</span>
+<img id="photo" alt="Profile photo">
+</div>
 <p><strong id="name">Loading...</strong></p>
-<input type="file" id="avatarInput"
-accept="image/jpeg,image/png,image/webp"
-style="display:none">
-
-<button type="button" id="changePhoto">
-📷 Change Profile Photo
-</button>
-
+<input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+<button type="button" id="changePhoto">📷 Change Profile Photo</button>
 <p id="photoMessage"></p>
-  <p id="email"></p>
+<p id="email"></p>
 <p class="small" id="created"></p>
+</div>
+
+<!-- WALLET -->
+<div class="card">
+<h2>My Wallet 💰</h2>
+<p>Your available wallet balance:</p>
+<div class="balance" id="walletBalance">Loading...</div>
+<p class="small">Your balance increases only after your deposit is verified by an administrator.</p>
+</div>
+
+<div class="card">
+<h2>Add Funds to Wallet ➕</h2>
+<p>Send your payment using MonCash or NatCash, then submit your transaction details below.</p>
+
+<div class="payment-info">
+<p><strong>MonCash:</strong> 31356200</p>
+<p><strong>NatCash:</strong> 35542784</p>
+<p class="small">Make sure you send the correct amount before submitting your request.</p>
+</div>
+
+<form id="depositForm">
+<label for="depositAmount">Amount (HTG)</label>
+<input type="number" id="depositAmount" min="1" step="0.01" placeholder="Enter amount" required>
+
+<label for="paymentMethod">Payment Method</label>
+<select id="paymentMethod" required>
+<option value="">Choose payment method</option>
+<option value="MonCash">MonCash</option>
+<option value="NatCash">NatCash</option>
+</select>
+
+<label for="transactionNumber">Transaction Number</label>
+<input type="text" id="transactionNumber" maxlength="100" placeholder="Enter transaction number" required>
+
+<button type="submit" id="depositButton">Submit Deposit Request</button>
+</form>
+
+<div id="walletMessage" role="status"></div>
+</div>
+
+<div class="card">
+<h2>Wallet Transactions 📋</h2>
+<div id="walletHistory">Loading wallet transactions...</div>
 </div>
 
 <div class="card">
@@ -66,15 +113,25 @@ style="display:none">
 <button id="changePassword">Change Password</button>
 <div id="message" role="status"></div>
 </div>
+
 </main>
+
 <script>
 const SUPABASE_URL="https://hfehedbezwhftqzsfpwf.supabase.co";
 const SUPABASE_KEY="sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 let currentUser=null;
 
 function msg(text,success=false){
 const box=document.getElementById("message");
+box.textContent=text;
+box.style.display="block";
+box.style.background=success?"#14532d":"#7f1d1d";
+}
+
+function walletMsg(text,success=false){
+const box=document.getElementById("walletMessage");
 box.textContent=text;
 box.style.display="block";
 box.style.background=success?"#14532d":"#7f1d1d";
@@ -86,12 +143,20 @@ return value?new Date(value).toLocaleDateString():"Not recorded";
 
 async function loadProfile(){
 const {data,error}=await client.auth.getUser();
-if(error||!data.user){location.href="login.html";return;}
+
+if(error||!data.user){
+location.href="login.html";
+return;
+}
+
 currentUser=data.user;
 
 document.getElementById("name").textContent=
 currentUser.user_metadata?.full_name||"Peter Top Up Customer";
-document.getElementById("email").textContent="Email: "+(currentUser.email||"");
+
+document.getElementById("email").textContent=
+"Email: "+(currentUser.email||"");
+
 document.getElementById("created").textContent=
 "Account created: "+dateFormat(currentUser.created_at);
 
@@ -100,104 +165,284 @@ document.getElementById("initial").textContent=
 
 const {data:avatarData}=client.storage.from("avatars")
 .getPublicUrl(currentUser.id+"/avatar");
+
 const photo=document.getElementById("photo");
-photo.onload=()=>{photo.style.display="block";document.getElementById("initial").style.display="none";};
-photo.onerror=()=>{photo.style.display="none";document.getElementById("initial").style.display="block";};
+
+photo.onload=()=>{
+photo.style.display="block";
+document.getElementById("initial").style.display="none";
+};
+
+photo.onerror=()=>{
+photo.style.display="none";
+document.getElementById("initial").style.display="block";
+};
+
 photo.src=avatarData.publicUrl+"?t="+Date.now();
 
-const {data:orders,error:orderError}=await client.from("orders")
+await loadOrders();
+await loadWallet();
+await loadWalletHistory();
+}
+
+async function loadOrders(){
+const {data:orders,error}=await client.from("orders")
 .select("id,player_id,payment_method,amount_htg,payment_status,delivery_status,created_at")
-.eq("user_id",currentUser.id).order("created_at",{ascending:false});
+.eq("user_id",currentUser.id)
+.order("created_at",{ascending:false});
 
 const history=document.getElementById("history");
-if(orderError){history.textContent="Unable to load transactions.";return;}
+
+if(error){
+history.textContent="Unable to load transactions.";
+return;
+}
+
 const count=orders?.length||0;
 const total=(orders||[]).reduce((sum,o)=>sum+(Number(o.amount_htg)||0),0);
+
 document.getElementById("orderCount").textContent="Total orders: "+count;
-document.getElementById("totalSpent").textContent="Total order value: "+total.toLocaleString()+" HTG";
+document.getElementById("totalSpent").textContent=
+"Total order value: "+total.toLocaleString()+" HTG";
+
 history.replaceChildren();
 
-if(!count){history.textContent="No transactions yet.";return;}
+if(!count){
+history.textContent="No transactions yet.";
+return;
+}
+
 orders.forEach(order=>{
 const item=document.createElement("div");
 item.style.cssText="background:#0b1428;border:1px solid #263b60;border-radius:10px;padding:14px;margin:12px 0";
+
 const details=document.createElement("p");
-details.textContent="Player ID: "+order.player_id+" | "+Number(order.amount_htg).toLocaleString()+" HTG | "+order.payment_method;
+details.textContent="Player ID: "+order.player_id+" | "+
+Number(order.amount_htg).toLocaleString()+" HTG | "+order.payment_method;
+
 const status=document.createElement("p");
 status.textContent="Payment: "+order.payment_status+" | Delivery: "+order.delivery_status;
+
 const date=document.createElement("p");
 date.className="small";
 date.textContent="Date: "+new Date(order.created_at).toLocaleString();
+
 item.append(details,status,date);
 history.appendChild(item);
 });
 }
 
+async function loadWallet(){
+const {data,error}=await client.from("wallet_balances")
+.select("balance_htg")
+.eq("user_id",currentUser.id)
+.maybeSingle();
+
+const display=document.getElementById("walletBalance");
+
+if(error){
+display.textContent="Unable to load balance";
+console.error(error);
+return;
+}
+
+const balance=Number(data?.balance_htg||0);
+display.textContent=balance.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})+" HTG";
+}
+
+async function loadWalletHistory(){
+const history=document.getElementById("walletHistory");
+
+const {data,error}=await client.from("wallet_transactions")
+.select("id,amount_htg,payment_method,transaction_number,status,created_at,verified_at")
+.eq("user_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+history.replaceChildren();
+
+if(error){
+history.textContent="Unable to load wallet transactions.";
+console.error(error);
+return;
+}
+
+if(!data||data.length===0){
+history.textContent="No wallet deposits yet.";
+return;
+}
+
+data.forEach(transaction=>{
+const item=document.createElement("div");
+item.className="deposit-item";
+
+const amount=document.createElement("p");
+amount.textContent="Amount: "+Number(transaction.amount_htg).toLocaleString()+" HTG";
+
+const method=document.createElement("p");
+method.textContent="Method: "+transaction.payment_method;
+
+const number=document.createElement("p");
+number.textContent="Transaction Number: "+transaction.transaction_number;
+
+const status=document.createElement("p");
+status.className="status";
+status.textContent="Status: "+transaction.status.toUpperCase();
+
+const date=document.createElement("p");
+date.className="small";
+date.textContent="Submitted: "+new Date(transaction.created_at).toLocaleString();
+
+item.append(amount,method,number,status,date);
+
+if(transaction.verified_at){
+const verified=document.createElement("p");
+verified.className="small";
+verified.textContent="Processed: "+new Date(transaction.verified_at).toLocaleString();
+item.appendChild(verified);
+}
+
+history.appendChild(item);
+});
+}
+
+document.getElementById("depositForm").addEventListener("submit",async function(event){
+event.preventDefault();
+
+if(!currentUser)return;
+
+const amount=Number(document.getElementById("depositAmount").value);
+const method=document.getElementById("paymentMethod").value;
+const transactionNumber=document.getElementById("transactionNumber").value.trim();
+
+if(!Number.isFinite(amount)||amount<=0){
+walletMsg("Enter a valid amount.");
+return;
+}
+
+if(!["MonCash","NatCash"].includes(method)){
+walletMsg("Choose MonCash or NatCash.");
+return;
+}
+
+if(!transactionNumber){
+walletMsg("Enter your transaction number.");
+return;
+}
+
+const button=document.getElementById("depositButton");
+button.disabled=true;
+button.textContent="Submitting...";
+
+const {error}=await client.from("wallet_transactions").insert({
+user_id:currentUser.id,
+transaction_type:"deposit",
+amount_htg:amount,
+payment_method:method,
+transaction_number:transactionNumber,
+status:"pending"
+});
+
+button.disabled=false;
+button.textContent="Submit Deposit Request";
+
+if(error){
+walletMsg("Deposit request failed: "+error.message);
+return;
+}
+
+document.getElementById("depositForm").reset();
+
+walletMsg("Deposit request submitted! Your balance will update after administrator verification.",true);
+
+await loadWalletHistory();
+});
+
 document.getElementById("changePassword").addEventListener("click",async()=>{
 const password=document.getElementById("newPassword").value;
 const confirm=document.getElementById("confirmPassword").value;
-if(password.length<8){msg("Password must contain at least 8 characters.");return;}
-if(password!==confirm){msg("Passwords do not match.");return;}
+
+if(password.length<8){
+msg("Password must contain at least 8 characters.");
+return;
+}
+
+if(password!==confirm){
+msg("Passwords do not match.");
+return;
+}
+
 const button=document.getElementById("changePassword");
 button.disabled=true;
 button.textContent="Updating...";
+
 const {error}=await client.auth.updateUser({password:password});
+
 button.disabled=false;
 button.textContent="Change Password";
-if(error){msg("Password update failed: "+error.message);return;}
+
+if(error){
+msg("Password update failed: "+error.message);
+return;
+}
+
 document.getElementById("newPassword").value="";
 document.getElementById("confirmPassword").value="";
+
 msg("Your password has been updated successfully!",true);
 });
+
 document.getElementById("changePhoto").addEventListener("click",()=>{
-  document.getElementById("avatarInput").click();
+document.getElementById("avatarInput").click();
 });
 
 document.getElementById("avatarInput").addEventListener("change",async function(){
-  const file=this.files[0];
-  if(!file)return;
+const file=this.files[0];
+if(!file)return;
 
-  const message=document.getElementById("photoMessage");
-  const button=document.getElementById("changePhoto");
+const message=document.getElementById("photoMessage");
+const button=document.getElementById("changePhoto");
 
-  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
-    message.textContent="Choose JPG, PNG or WebP.";
-    this.value="";
-    return;
-  }
+if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+message.textContent="Choose JPG, PNG or WebP.";
+this.value="";
+return;
+}
 
-  if(file.size>5*1024*1024){
-    message.textContent="Maximum photo size is 5 MB.";
-    this.value="";
-    return;
-  }
+if(file.size>5*1024*1024){
+message.textContent="Maximum photo size is 5 MB.";
+this.value="";
+return;
+}
 
-  button.disabled=true;
-  message.textContent="Uploading photo...";
+button.disabled=true;
+message.textContent="Uploading photo...";
 
-  const path=currentUser.id+"/avatar";
+const path=currentUser.id+"/avatar";
 
-  const {error}=await client.storage.from("avatars").upload(path,file,{
-    upsert:true,
-    contentType:file.type,
-    cacheControl:"3600"
-  });
-
-  button.disabled=false;
-  this.value="";
-
-  if(error){
-    message.textContent="Upload failed: "+error.message;
-    return;
-  }
-
-  const {data}=client.storage.from("avatars").getPublicUrl(path);
-  const photo=document.getElementById("photo");
-  photo.style.display="block";
-  document.getElementById("initial").style.display="none";
-  photo.src=data.publicUrl+"?t="+Date.now();
-  message.textContent="Profile photo updated successfully!";
+const {error}=await client.storage.from("avatars").upload(path,file,{
+upsert:true,
+contentType:file.type,
+cacheControl:"3600"
 });
+
+button.disabled=false;
+this.value="";
+
+if(error){
+message.textContent="Upload failed: "+error.message;
+return;
+}
+
+const {data}=client.storage.from("avatars").getPublicUrl(path);
+const photo=document.getElementById("photo");
+
+photo.style.display="block";
+document.getElementById("initial").style.display="none";
+photo.src=data.publicUrl+"?t="+Date.now();
+
+message.textContent="Profile photo updated successfully!";
+});
+
 loadProfile();
 </script>
 </body>
