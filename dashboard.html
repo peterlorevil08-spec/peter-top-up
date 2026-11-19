@@ -292,9 +292,52 @@ async function loadHistory(){
     delivered.className = "order-time";
     delivered.textContent =
       "Payment Delivered: " + formatDate(order.delivered_at);
+const receiptBtn = document.createElement("button");
+receiptBtn.textContent = "View Receipt";
 
-    item.append(details, status, placed, verified, delivered);
-    container.appendChild(item);
+receiptBtn.addEventListener("click", () => {
+  const receiptWindow = window.open("", "_blank");
+
+  if (!receiptWindow) {
+    alert("Please allow pop-ups to view your receipt.");
+    return;
+  }
+
+  receiptWindow.document.write(`
+    <html>
+    <head>
+      <title>Peter Top Up Receipt</title>
+      <style>
+        body { font-family: Arial; padding: 25px; background: #f1f5f9; }
+        .receipt { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+        h2 { text-align: center; color: #2563eb; }
+        .line { padding: 12px 0; border-bottom: 1px solid #ddd; }
+        button { width: 100%; padding: 13px; margin-top: 20px; background: #2563eb; color: white; border: 0; border-radius: 8px; }
+        @media print { button { display: none; } }
+      </style>
+    </head>
+    <body>
+      <div class="receipt">
+        <h2>PETER TOP UP</h2>
+        <p style="text-align:center">TRANSACTION RECEIPT</p>
+        <div class="line">Player ID: ${order.player_id}</div>
+        <div class="line">Amount: ${Number(order.amount_htg).toLocaleString()} HTG</div>
+        <div class="line">Payment Method: ${order.payment_method}</div>
+        <div class="line">Payment Status: ${order.payment_status}</div>
+        <div class="line">Delivery Status: ${order.delivery_status}</div>
+        <div class="line">Payment Placed: ${formatDate(order.created_at)}</div>
+        <div class="line">Payment Verified: ${formatDate(order.verified_at)}</div>
+        <div class="line">Payment Delivered: ${formatDate(order.delivered_at)}</div>
+        <button onclick="window.print()">Print / Save as PDF</button>
+      </div>
+    </body>
+    </html>
+  `);
+
+  receiptWindow.document.close();
+});
+ item.append(details, status, placed, verified, delivered, receiptBtn);
+  container.appendChild(item);
   });
 }
 
