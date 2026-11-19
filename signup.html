@@ -1,50 +1,121 @@
-
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign Up - Peter Top Up</title>
-<style>
-body{margin:0;background:#080610;color:white;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:15px}
-.box{background:#171020;border:1px solid #8134bb;padding:30px 22px;border-radius:15px;width:100%;max-width:380px}
-h1{text-align:center;color:#bd75ff}
-p{text-align:center;color:#c5b8d2}
-input{width:100%;padding:13px;margin:9px 0;border:1px solid #66319a;border-radius:8px;background:#080610;color:white;font-size:15px;box-sizing:border-box}
-button{width:100%;padding:13px;background:#922eff;color:white;border:0;border-radius:8px;margin-top:12px;font-size:16px}
-a{color:#bd75ff}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - Peter Top Up</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #0b1020;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #151e35;
+      padding: 30px;
+      border-radius: 16px;
+    }
+    h1 { color: #38bdf8; text-align: center; }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    input { background: #26344f; color: white; }
+    button {
+      background: #38bdf8;
+      color: #07111f;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #message { text-align: center; color: #38bdf8; }
+    a { color: #38bdf8; }
+  </style>
 </head>
 <body>
-<div class="box">
-<h1>PETER TOP UP</h1>
-<p>Create your customer account</p>
-<form id="signupForm">
-<input type="text" placeholder="Full Name" required>
-<input type="email" id="email" placeholder="Email Address" required>
-<input type="password" id="password" placeholder="Password" minlength="8" required>
-<button type="submit">Create Account</button>
-</form>
-<p>Already have an account? <a href="login.html">Login</a></p>
-<a href="index.html">Back to Home</a>
-</div>
-<script>
-document.getElementById("signupForm").addEventListener("submit", async function(e) {
-e.preventDefault();
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+  <div class="card">
+    <h1>Create Account</h1>
+    <form id="signupForm">
+      <input id="fullName" type="text" placeholder="Full Name" required>
+      <input id="email" type="email" placeholder="Email Address" required>
+      <input id="password" type="password" placeholder="Password (minimum 6 characters)" minlength="6" required>
+      <button id="submitBtn" type="submit">Create Account</button>
+    </form>
+    <p id="message"></p>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
 
-const { data, error } = await supabaseClient.auth.signUp({
-  email: email,
-  password: password
-});
+  <script>
+    const SUPABASE_URL = "https://hfehedbezwhftqzsfpwf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB";
 
-if (error) {
-  alert(error.message);
-} else {
-  alert("Account created! Please check your email to confirm.");
-}
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const form = document.getElementById("signupForm");
+    const message = document.getElementById("message");
+    const button = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      button.disabled = true;
+      message.textContent = "Creating account...";
+
+      try {
+        const { data, error } = await client.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: fullName }
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.user && data.session) {
+          const { error: profileError } = await client
+            .from("profiles")
+            .upsert({
+              id: data.user.id,
+              full_name: fullName,
+              email: email
+            });
+
+          if (profileError) throw profileError;
+        }
+
+        message.textContent = data.session
+          ? "Account created successfully! You can now login."
+          : "Account created. Please check your account settings.";
+
+        form.reset();
+
+      } catch (error) {
+        message.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
