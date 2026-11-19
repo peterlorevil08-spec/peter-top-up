@@ -1,5 +1,5 @@
-const SUPABASE_URL = "METE_PROJECT_URL_LA";
-const SUPABASE_KEY = "METE_PUBLISHABLE_KEY_LA";
+const SUPABASE_URL =  "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB
+const SUPABASE_KEY =  "sb_publishable_EXOjvRcjrm0Jlp76bG5lVA_9HaHERpB
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
