@@ -207,7 +207,11 @@ footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
       </div>
 
       <div class="profile-info">
-        <p><strong id="customerEmail">Loading...</strong></p>
+        <p><strong id="customerName">Loading...</strong></p>
+<p id="customerEmail"></p>
+<p class="small" id="accountCreated"></p>
+<p id="customerEmail"></p>
+<p class="small" id="accountCreated"></p>
         <p class="small">Your Peter Top Up profile</p>
 
         <input
@@ -423,8 +427,15 @@ async function loadDashboard(){
 
   currentUser = data.user;
 
-  document.getElementById("customerEmail").textContent =
-    currentUser.email || "";
+  document.getElementById("customerName").textContent =
+  currentUser.user_metadata?.full_name || "Peter Top Up Customer";
+
+document.getElementById("customerEmail").textContent =
+  "Email: " + (currentUser.email || "");
+
+document.getElementById("accountCreated").textContent =
+  "Account created: " +
+  new Date(currentUser.created_at).toLocaleDateString();
 
   await loadAvatar();
   await loadProducts();
