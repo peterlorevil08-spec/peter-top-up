@@ -445,9 +445,12 @@ async function processWalletDeposit(id,action){
     return;
   }
 
-  alert(action==="verify"
+    alert(action==="verify"
     ?"Deposit verified successfully!"
     :"Deposit rejected successfully!");
+
+  await loadWalletRequests();
+}
 
 }
 
