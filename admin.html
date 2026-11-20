@@ -465,7 +465,6 @@ async function updateOrder(id,changes){
   alert("Order updated successfully!");
   await loadOrders();
 }
-await loadWalletRequests();
 document.getElementById("logout").onclick = async () => {
   await db.auth.signOut();
   location.href = "login.html";
