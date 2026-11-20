@@ -224,6 +224,7 @@ async function start(){
   }
 
   await loadOrders();
+await loadWalletRequests();
 }
 
 async function loadOrders(){
@@ -448,7 +449,6 @@ async function processWalletDeposit(id,action){
     ?"Deposit verified successfully!"
     :"Deposit rejected successfully!");
 
-  await loadWalletRequests();
 }
 
 async function updateOrder(id,changes){
