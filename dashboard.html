@@ -249,11 +249,12 @@ footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
     <h2><span class="section-number">03.</span> Payment Method</h2>
 
     <label for="paymentMethod">Choose Payment Method</label>
-    <select id="paymentMethod">
-      <option value="">Choose payment method</option>
-      <option value="MonCash">MonCash</option>
-      <option value="NatCash">NatCash</option>
-    </select>
+<select id="paymentMethod">
+  <option value="">Choose payment method</option>
+  <option value="MonCash">MonCash</option>
+  <option value="NatCash">NatCash</option>
+  <option value="Wallet">Pay with Wallet</option>
+</select>
 
     <div class="notice">
       <p><strong>MonCash:</strong> 31356200</p>
@@ -263,10 +264,11 @@ footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
       </p>
     </div>
 
-    <label for="transactionNumber">Payment Transaction Number</label>
-    <input id="transactionNumber" type="text"
-      placeholder="Enter transaction number" autocomplete="off">
-
+   <div id="transactionField">
+  <label for="transactionNumber">Payment Transaction Number</label>
+  <input id="transactionNumber" type="text"
+    placeholder="Enter transaction number" autocomplete="off">
+</div>
     <button id="submitOrder">Submit Order</button>
     <div id="message" role="status"></div>
   </div>
@@ -511,11 +513,15 @@ async function submitOrder(){
   const transactionNumber =
     document.getElementById("transactionNumber").value.trim();
 
-  if(!playerId || !paymentMethod || !transactionNumber){
-    showMessage("Please complete all fields.");
-    return;
-  }
+ if(!playerId || !paymentMethod){
+  showMessage("Please complete all required fields.");
+  return;
+}
 
+if(paymentMethod !== "Wallet" && !transactionNumber){
+  showMessage("Please enter your transaction number.");
+  return;
+}
   if(!/^[a-zA-Z0-9-]+$/.test(playerId)){
     showMessage("Please check your Player ID.");
     return;
