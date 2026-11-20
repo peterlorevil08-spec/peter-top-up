@@ -532,26 +532,45 @@ if(paymentMethod !== "Wallet" && !transactionNumber){
   button.textContent = "Submitting...";
 
   try {
-    const {error} = await client
-      .from("orders")
-      .insert({
-        user_id: currentUser.id,
-        product_id: selectedProduct.id,
-        player_id: playerId,
-        payment_method: paymentMethod,
-        amount_htg: selectedProduct.price_htg,
-        payment_status: "Pending",
-        delivery_status: "Pending",
-        transaction_number: transactionNumber
-      });
+   if(paymentMethod === "Wallet"){
 
-    if(error) throw error;
+  const {error} = await client.rpc(
+    "purchase_diamonds_with_wallet",
+    {
+      p_product_id: selectedProduct.id,
+      p_player_id: playerId
+    }
+  );
 
-    showMessage(
-      "Order submitted! Payment is awaiting manual verification.",
-      true
-    );
+  if(error) throw error;
 
+  showMessage(
+    "Order paid successfully with Wallet!",
+    true
+  );
+
+}else{
+
+  const {error} = await client
+    .from("orders")
+    .insert({
+      user_id: currentUser.id,
+      product_id: selectedProduct.id,
+      player_id: playerId,
+      payment_method: paymentMethod,
+      amount_htg: selectedProduct.price_htg,
+      payment_status: "Pending",
+      delivery_status: "Pending",
+      transaction_number: transactionNumber
+    });
+
+  if(error) throw error;
+
+  showMessage(
+    "Order submitted! Payment is awaiting manual verification.",
+    true
+  );
+}
     document.getElementById("playerId").value = "";
     document.getElementById("paymentMethod").value = "";
     document.getElementById("transactionNumber").value = "";
